@@ -1,0 +1,21 @@
+.dashboard { padding: 48px 0; }
+.dashboard-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 36px; }
+.dashboard-count { color: var(--gray-dark); margin-bottom: 24px; }
+.dashboard-empty {
+  text-align: center;
+  padding: 80px 24px;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.empty-icon { font-size: 4rem; margin-bottom: 16px; }
+.dashboard-empty h3 { font-size: 1.4rem; margin-bottom: 8px; }
+.dashboard-empty p { color: var(--gray-dark); max-width: 420px; margin: 0 auto; line-height: 1.6; }
+
+.dashboard-course-card { cursor: pointer; }
+.dcc-img { height: 160px; overflow: hidden; background: var(--gray); }
+.dcc-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+.dashboard-course-card:hover .dcc-img img { transform: scale(1.05); }
+.dcc-placeholder { display: flex; align-items: center; justify-content: center; height: 100%; font-size: 3rem; }
+.dcc-body { padding: 18px; }
+.dcc-title { font-size: 1rem; font-weight: 700; margin: 8px 0; }

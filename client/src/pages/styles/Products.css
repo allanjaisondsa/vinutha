@@ -1,0 +1,5 @@
+.products-hero {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  padding: 60px 0 40px;
+}
+.category-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; }

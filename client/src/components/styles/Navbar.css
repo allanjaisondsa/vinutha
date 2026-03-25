@@ -1,0 +1,85 @@
+.navbar {
+  background: var(--white);
+  border-bottom: 2px solid var(--gray);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 16px rgba(59,31,10,0.08);
+}
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 68px;
+  gap: 16px;
+}
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--dark);
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.navbar-brand img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary);
+}
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.nav-link {
+  padding: 7px 16px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: var(--dark-2);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: var(--transition);
+}
+.nav-link:hover { background: var(--gray); color: var(--primary); }
+.nav-admin { color: var(--primary-dark); font-weight: 700; }
+.navbar-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.navbar-user { font-weight: 600; color: var(--dark-2); font-size: 0.9rem; }
+
+.navbar-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--dark);
+  cursor: pointer;
+}
+.navbar-actions-mobile { display: none; margin-top: 10px; border-top: 1px solid var(--gray); padding-top: 10px; }
+
+@media (max-width: 768px) {
+  .navbar-toggle { display: block; }
+  .navbar-actions { display: none; }
+  .navbar-brand span { font-size: 1rem; }
+  
+  .navbar-links {
+    display: none;
+    position: absolute;
+    top: 68px;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    flex-direction: column;
+    padding: 20px;
+    border-bottom: 2px solid var(--gray);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    gap: 8px;
+  }
+  .navbar-links.open { display: flex; }
+  .nav-link { width: 100%; padding: 12px 16px; border-radius: var(--radius-sm); }
+  .navbar-actions-mobile { display: block; width: 100%; }
+}
+
