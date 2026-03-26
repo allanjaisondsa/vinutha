@@ -18,7 +18,7 @@ router.post('/create-user', async (req, res) => {
 
     const inviteToken = uuidv4();
     const user = await User.create({ name, email, inviteToken });
-    const inviteLink = `${process.env.CLIENT_URL}/vinutha/register?token=${inviteToken}`;
+    const inviteLink = `${process.env.CLIENT_URL}/register?token=${inviteToken}`;
     res.json({ message: 'Invite created', user: { id: user.id, name: user.name, email: user.email }, inviteLink });
   } catch (err) {
     res.status(500).json({ message: err.message });

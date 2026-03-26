@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/vinutha/',   // all built assets prefixed with /vinutha/
+  base: '/',   // all built assets prefixed with /
 })

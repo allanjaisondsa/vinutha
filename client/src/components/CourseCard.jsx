@@ -2,12 +2,12 @@ const WA = '918197366069';
 
 export default function CourseCard({ course }) {
   const waLink = `https://wa.me/${WA}?text=${encodeURIComponent(
-    `Hi! I'm interested in the course "${course.title}" (₹${course.price}). Please share purchase details! 🎨\n\nCourse link: ${window.location.origin}/vinutha/courses/${course.id}`
+    `Hi! I'm interested in the course "${course.title}" (₹${course.price}). Please share purchase details! 🎨\n\nCourse link: ${window.location.origin}/courses/${course.id}`
   )}`;
 
   return (
     <div className="course-card">
-      <a href={`/vinutha/courses/${course.id}`} className="course-card-img-link">
+      <a href={`/courses/${course.id}`} className="course-card-img-link">
         <div className="course-card-img">
           {course.thumbnail
             ? <img src={course.thumbnail} alt={course.title} />
@@ -39,7 +39,7 @@ export default function CourseCard({ course }) {
               💬 Enquire
             </a>
             <a
-              href={`/vinutha/courses/${course.id}`}
+              href={`/courses/${course.id}`}
               className="btn btn-primary btn-sm"
             >
               View Details

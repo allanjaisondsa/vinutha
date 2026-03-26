@@ -49,7 +49,7 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <BrowserRouter basename="/vinutha">
+    <BrowserRouter>
       <AuthProvider>
         <AppRoutes />
       </AuthProvider>

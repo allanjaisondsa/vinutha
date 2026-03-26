@@ -12,7 +12,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: url('/vinutha/resin-hero.png') center/cover;
+  background: url('/resin-hero.png') center/cover;
   opacity: 0.2;
 }
 

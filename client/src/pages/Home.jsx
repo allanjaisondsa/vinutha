@@ -14,7 +14,7 @@ const CATALOGUE_ITEMS = [
 ];
 
 function buildWAMessage(courses) {
-  const base = window.location.origin + '/vinutha';
+  const base = window.location.origin;
   const lines = courses.map(
     (c, i) => `${i + 1}. "${c.title}" — ₹${c.price?.toLocaleString()}\n   ${base}/courses/${c.id}`
   );
@@ -109,7 +109,7 @@ export default function Home() {
                 const selected = inCart(course.id);
                 return (
                   <div key={course.id} className={`course-card ${selected ? 'course-card--selected' : ''}`}>
-                    <a href={`/vinutha/courses/${course.id}`} className="course-card-img-link">
+                    <a href={`/courses/${course.id}`} className="course-card-img-link">
                       <div className="course-card-img">
                         {course.thumbnail
                           ? <img src={course.thumbnail} alt={course.title} />
@@ -134,7 +134,7 @@ export default function Home() {
                         <span className="course-price">₹{course.price?.toLocaleString()}</span>
                         <div className="course-card-actions">
                           <a
-                            href={`/vinutha/courses/${course.id}`}
+                            href={`/courses/${course.id}`}
                             className="btn btn-outline btn-sm"
                           >
                             Details
@@ -165,7 +165,7 @@ export default function Home() {
             {CATALOGUE_ITEMS.map((item) => (
               <a
                 key={item.category}
-                href={`/vinutha/products?category=${encodeURIComponent(item.category)}`}
+                href={`/products?category=${encodeURIComponent(item.category)}`}
                 className="catalogue-btn"
               >
                 {item.label}

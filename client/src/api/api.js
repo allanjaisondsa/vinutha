@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 // In dev: VITE_API_BASE = http://localhost:5000/api
-// In prod: VITE_API_BASE = /vinutha/api  (relative, same server)
+// In prod: VITE_API_BASE = /api  (relative, same server)
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE || '/vinutha/api',
+  baseURL: import.meta.env.VITE_API_BASE || '/api',
   withCredentials: true,
 });
 

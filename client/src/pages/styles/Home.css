@@ -4,7 +4,7 @@
   min-height: 480px;
   display: flex;
   align-items: center;
-  background-image: url('/vinutha/resin-hero.png');
+  background-image: url('/resin-hero.png');
   background-size: cover;
   background-position: center top;
   overflow: hidden;
