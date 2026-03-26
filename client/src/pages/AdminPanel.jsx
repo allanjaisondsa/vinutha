@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import api, { SERVER_URL } from '../api/api';
 import { useAuth } from '../context/AuthContext';
 import './styles/Admin.css';
@@ -250,6 +250,8 @@ export default function AdminPanel() {
 
   const [assignUser, setAssignUser] = useState('');
   const [assignCourse, setAssignCourse] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const quickAssignIds = searchParams.get('assignCourses');
 
   const loadAll = () => {
     api.get('/admin/users').then((r) => setUsers(r.data));
@@ -285,6 +287,22 @@ export default function AdminPanel() {
       setMsg('✅ Course assigned!');
       loadAll();
     } catch (err) { setMsg('❌ ' + err.response?.data?.message); }
+  };
+
+  const assignMultipleCourses = async () => {
+    if (!assignUser || !quickAssignIds) return setMsg('Select a user to assign these courses');
+    const ids = quickAssignIds.split(',').map(id => id.trim());
+    try {
+      for (const id of ids) {
+        if (id) await api.post('/admin/assign-course', { userId: assignUser, courseId: id });
+      }
+      setMsg(`✅ Successfully assigned ${ids.length} course(s)!`);
+      loadAll();
+      searchParams.delete('assignCourses');
+      setSearchParams(searchParams);
+    } catch (err) {
+      setMsg('❌ Error assigning courses: ' + err.response?.data?.message);
+    }
   };
 
   const removeCourseFromUser = async (userId, courseId) => {
@@ -363,8 +381,29 @@ export default function AdminPanel() {
               )}
             </div>
 
+            {quickAssignIds && (
+              <div className="admin-section card" style={{ border: '2px solid #0e7490', background: '#f0f9ff' }}>
+                <h3 style={{ color: '#0c4a6e' }}>🛒 WhatsApp Enquiry: Quick Assign</h3>
+                <p style={{ fontSize: '0.9rem', marginBottom: 16 }}>
+                  You clicked a link from WhatsApp. Select the user who bought these courses to assign them all at once.
+                </p>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Select Registered User</label>
+                    <select value={assignUser} onChange={(e) => setAssignUser(e.target.value)}>
+                      <option value="">-- Select user --</option>
+                      {users.map((u) => <option key={u.id} value={u.id}>{u.name} ({u.email})</option>)}
+                    </select>
+                  </div>
+                </div>
+                <button className="btn btn-teal" onClick={assignMultipleCourses}>
+                  Assign All Selected Courses
+                </button>
+              </div>
+            )}
+
             <div className="admin-section card">
-              <h3>Assign Course to User</h3>
+              <h3>Assign Single Course to User</h3>
               <div className="form-row">
                 <div className="form-group">
                   <label>User</label>

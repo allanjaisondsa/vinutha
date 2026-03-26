@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import CoursePage from './pages/CoursePage';
 import CourseDetail from './pages/CourseDetail';
 import Products from './pages/Products';
+import Workshop from './pages/Workshop';
 import AdminPanel from './pages/AdminPanel';
 
 // Guard: redirect to login if not authenticated
@@ -35,6 +36,7 @@ function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/products" element={<Products />} />
+        <Route path="/workshop" element={<Workshop />} />
         <Route path="/courses/:id" element={<CoursePage />} />
         <Route path="/courses/:id/watch" element={<PrivateRoute><CourseDetail /></PrivateRoute>} />
         <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />

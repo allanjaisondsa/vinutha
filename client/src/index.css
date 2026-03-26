@@ -1,20 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap');
 
 :root {
-  --primary: #E8891A;
-  --primary-dark: #C0622A;
-  --dark: #3B1F0A;
-  --dark-2: #5C3317;
-  --light: #FFF8F0;
-  --accent: #F5C87A;
-  --gray: #F0E8E0;
-  --gray-dark: #9E8878;
-  --white: #ffffff;
-  --shadow: 0 4px 24px rgba(59, 31, 10, 0.12);
-  --shadow-lg: 0 8px 40px rgba(59, 31, 10, 0.18);
-  --radius: 14px;
-  --radius-sm: 8px;
-  --transition: 0.25s ease;
+  /* ── Teal color scheme ─────────────────────── */
+  --primary:       #0e7490;   /* deep teal */
+  --primary-dark:  #164e63;   /* darker teal */
+  --primary-light: #06b6d4;   /* bright cyan */
+  --dark:          #0c4a6e;   /* dark navy-teal */
+  --dark-2:        #155e75;
+  --light:         #f0f9ff;   /* ice blue */
+  --accent:        #22d3ee;   /* bright cyan */
+  --gray:          #e0f2fe;   /* light blue-gray */
+  --gray-dark:     #64748b;
+  --white:         #ffffff;
+  --shadow:        0 4px 24px rgba(14, 116, 144, 0.12);
+  --shadow-lg:     0 8px 40px rgba(14, 116, 144, 0.2);
+  --radius:        14px;
+  --radius-sm:     8px;
+  --transition:    0.25s ease;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -119,7 +121,7 @@ body {
   background: var(--gray);
   color: var(--dark-2);
 }
-.badge-primary { background: rgba(232,137,26,0.15); color: var(--primary-dark); }
+.badge-primary { background: rgba(14,116,144,0.12); color: var(--primary-dark); }
 
 /* ── Section title ──────────────────────────────── */
 .section-title {
@@ -174,6 +176,44 @@ body {
 }
 .price span { font-size: 0.85rem; font-weight: 400; color: var(--gray-dark); }
 
+/* ── WhatsApp FAB ─────────────────────────────────── */
+.whatsapp-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #25D366;
+  color: #fff;
+  text-decoration: none;
+  padding: 14px 22px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.3px;
+  box-shadow: 0 6px 28px rgba(37,211,102,0.45);
+  transition: all 0.22s;
+}
+.whatsapp-fab:hover {
+  background: #128C7E;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 36px rgba(37,211,102,0.5);
+}
+.whatsapp-fab span {
+  white-space: nowrap;
+  font-size: 0.92rem;
+}
+@media (max-width: 640px) {
+  .whatsapp-fab {
+    bottom: 16px;
+    right: 16px;
+    padding: 12px 18px;
+    font-size: 0.88rem;
+  }
+}
+
 /* ── Responsive ─────────────────────────────────── */
 @media (max-width: 768px) {
   .container { padding: 0 16px; }
@@ -182,7 +222,6 @@ body {
   .section-title { font-size: 1.6rem; }
   .section-subtitle { font-size: 0.9rem; margin-bottom: 24px; }
   
-  .btn { width: 100%; justify-content: center; padding: 12px 20px; }
   .btn-sm { padding: 8px 16px; width: auto; }
 }
 

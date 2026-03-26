@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import api from '../api/api';
 import ProductCard from '../components/ProductCard';
 import WhatsAppButton from '../components/WhatsAppButton';
@@ -7,7 +8,9 @@ import './styles/Products.css';
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [category, setCategory] = useState('All');
+  const [searchParams] = useSearchParams();
+  const initialCategory = searchParams.get('category') || 'All';
+  const [category, setCategory] = useState(initialCategory);
 
   useEffect(() => {
     api.get('/products').then((res) => setProducts(res.data)).finally(() => setLoading(false));
@@ -36,7 +39,7 @@ export default function Products() {
 
         {filtered.length === 0
           ? <p className="empty-msg">No products in this category.</p>
-          : <div className="grid-3">{filtered.map((p) => <ProductCard key={p.id} product={p} />)}</div>
+          : <div className="products-grid">{filtered.map((p) => <ProductCard key={p.id} product={p} />)}</div>
         }
       </div>
       <WhatsAppButton />

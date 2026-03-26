@@ -60,7 +60,7 @@ export default function CoursePage() {
                 </button>
               ) : (
                 <a
-                  href={`https://wa.me/919999999999?text=${waMessage}`}
+                  href={`https://wa.me/918197366069?text=${waMessage}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn btn-primary"
@@ -118,7 +118,7 @@ export default function CoursePage() {
               <p>Contact us via WhatsApp to purchase this course and get instant access.</p>
             </div>
             <a
-              href={`https://wa.me/919999999999?text=${waMessage}`}
+              href={`https://wa.me/918197366069?text=${waMessage}`}
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-primary"
