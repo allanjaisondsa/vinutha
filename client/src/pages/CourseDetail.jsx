@@ -1,48 +1,35 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import ReactPlayer from 'react-player';
 import api, { SERVER_URL } from '../api/api';
 import { useAuth } from '../context/AuthContext';
 import './styles/CourseDetail.css';
 
 
-// Converts a YouTube watch URL to embed URL, or prefixes /uploads/ paths with server URL
-function toEmbedUrl(url) {
+// Prepends server URL to local uploads. react-player handles YouTube normally.
+function getPlayableUrl(url) {
   if (!url) return '';
-  // Uploaded file — prefix with server base URL
   if (url.startsWith('/uploads/')) return `${SERVER_URL}${url}`;
-  if (url.includes('youtube.com/embed/') || url.includes('youtu.be/')) {
-    const id = url.includes('youtu.be/')
-      ? url.split('youtu.be/')[1]?.split('?')[0]
-      : url.split('youtube.com/embed/')[1]?.split('?')[0];
-    if (id) return `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1`;
-  }
-  if (url.includes('youtube.com/watch')) {
-    const id = new URL(url).searchParams.get('v');
-    if (id) return `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1`;
-  }
-  return url; // raw MP4 or other direct URL
+  return url;
 }
 
-
-function VideoPlayer({ url, title }) {
-  const embed = toEmbedUrl(url);
-  const isYouTube = embed.includes('youtube.com/embed');
+function VideoPlayer({ url }) {
+  const playableUrl = getPlayableUrl(url);
 
   return (
-    <div className="video-player">
-      {isYouTube ? (
-        <iframe
-          src={embed}
-          title={title}
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-      ) : (
-        <video src={embed} controls controlsList="nodownload">
-          Your browser does not support video playback.
-        </video>
-      )}
+    <div className="video-player" style={{ position: 'relative', paddingTop: '56.25%', background: '#000' }}>
+      <ReactPlayer
+        url={playableUrl}
+        controls
+        width="100%"
+        height="100%"
+        style={{ position: 'absolute', top: 0, left: 0 }}
+        config={{
+          file: {
+            attributes: { controlsList: 'nodownload' }
+          }
+        }}
+      />
     </div>
   );
 }
