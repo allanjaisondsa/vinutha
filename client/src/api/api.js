@@ -9,6 +9,9 @@ const api = axios.create({
 
 // Use this anywhere you need to prefix /uploads/ paths with the server origin
 // In dev: http://localhost:5000   In prod: '' (same origin)
-export const SERVER_URL = import.meta.env.VITE_SERVER_URL || '';
+let rawServerUrl = import.meta.env.VITE_SERVER_URL || '';
+if (rawServerUrl === '/') rawServerUrl = '';
+else if (rawServerUrl.endsWith('/')) rawServerUrl = rawServerUrl.slice(0, -1);
+export const SERVER_URL = rawServerUrl;
 
 export default api;

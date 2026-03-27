@@ -7,7 +7,7 @@ const router = express.Router();
 // Cookie options — httpOnly prevents JS access, sameSite protects against CSRF
 const cookieOptions = {
   httpOnly: true,
-  sameSite: 'lax',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days in ms
   secure: process.env.NODE_ENV === 'production', // HTTPS only in prod
 };
