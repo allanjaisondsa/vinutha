@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import CoursePage from './pages/CoursePage';
 import CourseDetail from './pages/CourseDetail';
 import Products from './pages/Products';
+import CataloguePage from './pages/CataloguePage';
 import Workshop from './pages/Workshop';
 import AdminPanel from './pages/AdminPanel';
 
@@ -36,6 +37,7 @@ function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/products" element={<Products />} />
+        <Route path="/catalogue/:id" element={<CataloguePage />} />
         <Route path="/workshop" element={<Workshop />} />
         <Route path="/courses/:id" element={<CoursePage />} />
         <Route path="/courses/:id/watch" element={<PrivateRoute><CourseDetail /></PrivateRoute>} />

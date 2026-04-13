@@ -3,6 +3,7 @@ const sequelize = require('../db');
 const User = require('./User');
 const { Course, Lesson } = require('./Course');
 const Product = require('./Product');
+const Catalogue = require('./Catalogue');
 const { DataTypes } = require('sequelize');
 
 // Join table: which courses a user has purchased
@@ -15,4 +16,4 @@ const UserProduct = sequelize.define('UserProduct', {}, { timestamps: false });
 User.belongsToMany(Product, { through: UserProduct, as: 'purchasedProducts' });
 Product.belongsToMany(User, { through: UserProduct, as: 'buyers' });
 
-module.exports = { sequelize, User, Course, Lesson, Product, UserCourse, UserProduct };
+module.exports = { sequelize, User, Course, Lesson, Product, Catalogue, UserCourse, UserProduct };

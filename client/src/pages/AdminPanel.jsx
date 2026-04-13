@@ -240,6 +240,11 @@ export default function AdminPanel() {
   const [users, setUsers] = useState([]);
   const [courses, setCourses] = useState([]);
   const [products, setProducts] = useState([]);
+  const [catalogueItems, setCatalogueItems] = useState([]);
+  const [catalogueForm, setCatalogueForm] = useState(null); // null=hidden, {}=new, {...}=edit
+  const [catProducts, setCatProducts] = useState({}); // { [catalogueId]: [products] }
+  const [catProductForm, setCatProductForm] = useState(null); // { catalogueId, category, form: {...} }
+  const [loadingCatProducts, setLoadingCatProducts] = useState({});
 
   const [inviteForm, setInviteForm] = useState({ name: '', email: '' });
   const [inviteLink, setInviteLink] = useState('');
@@ -257,6 +262,7 @@ export default function AdminPanel() {
     api.get('/admin/users').then((r) => setUsers(r.data));
     api.get('/admin/courses').then((r) => setCourses(r.data));
     api.get('/admin/products').then((r) => setProducts(r.data));
+    api.get('/admin/catalogue').then((r) => setCatalogueItems(r.data));
   };
 
   useEffect(() => {
@@ -342,6 +348,28 @@ export default function AdminPanel() {
     loadAll();
   };
 
+  const loadCatProducts = async (item) => {
+    if (catProducts[item.id]) {
+      // toggle off
+      setCatProducts((p) => { const n = { ...p }; delete n[item.id]; return n; });
+      return;
+    }
+    setLoadingCatProducts((p) => ({ ...p, [item.id]: true }));
+    try {
+      const res = await api.get(`/catalogue/${item.id}`);
+      setCatProducts((p) => ({ ...p, [item.id]: res.data.products }));
+    } finally {
+      setLoadingCatProducts((p) => { const n = { ...p }; delete n[item.id]; return n; });
+    }
+  };
+
+  const deleteCatProduct = async (productId, catalogueId) => {
+    if (!window.confirm('Delete this product?')) return;
+    await api.delete(`/admin/products/${productId}`);
+    const res = await api.get(`/catalogue/${catalogueId}`);
+    setCatProducts((p) => ({ ...p, [catalogueId]: res.data.products }));
+  };
+
   return (
     <div className="admin-page">
       <div className="admin-header container">
@@ -353,7 +381,7 @@ export default function AdminPanel() {
         {msg && <div className={`alert ${msg.startsWith('✅') ? 'alert-success' : 'alert-error'}`} onClick={() => setMsg('')}>{msg} <span style={{ float: 'right', cursor: 'pointer' }}>×</span></div>}
 
         <div className="admin-tabs">
-          {['users', 'courses', 'products'].map((t) => (
+          {['users', 'courses', 'products', 'catalogue'].map((t) => (
             <button key={t} className={`btn btn-sm ${tab === t ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setTab(t)}>
               {t.charAt(0).toUpperCase() + t.slice(1)}
             </button>
@@ -521,6 +549,164 @@ export default function AdminPanel() {
             </div>
           </div>
         )}
+
+        {/* ── CATALOGUE TAB ── */}
+        {tab === 'catalogue' && (
+          <div>
+            <div className="tab-header">
+              <h3>Catalogue Items ({catalogueItems.length})</h3>
+              <button className="btn btn-primary" onClick={() => setCatalogueForm({ label: '', category: '', order: 0 })}>+ New Item</button>
+            </div>
+
+            {catalogueForm !== null && (
+              <div className="admin-section card">
+                <h3>{catalogueForm.id ? 'Edit Item' : 'New Catalogue Item'}</h3>
+                <div className="admin-form">
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Label (display name)</label>
+                      <input
+                        value={catalogueForm.label}
+                        onChange={(e) => setCatalogueForm((f) => ({ ...f, label: e.target.value }))}
+                        placeholder="e.g. Varmala Preservation"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Category (used for product filter)</label>
+                      <input
+                        value={catalogueForm.category}
+                        onChange={(e) => setCatalogueForm((f) => ({ ...f, category: e.target.value }))}
+                        placeholder="e.g. Varmala Preservation"
+                      />
+                    </div>
+                  </div>
+                  <div className="form-group" style={{ maxWidth: 160 }}>
+                    <label>Order (lower = first)</label>
+                    <input
+                      type="number"
+                      value={catalogueForm.order}
+                      onChange={(e) => setCatalogueForm((f) => ({ ...f, order: Number(e.target.value) }))}
+                    />
+                  </div>
+                  <div className="form-actions">
+                    <button className="btn btn-primary" onClick={async () => {
+                      try {
+                        if (catalogueForm.id) await api.put(`/admin/catalogue/${catalogueForm.id}`, catalogueForm);
+                        else await api.post('/admin/catalogue', catalogueForm);
+                        setCatalogueForm(null);
+                        loadAll();
+                        setMsg('✅ Catalogue item saved!');
+                      } catch (err) { setMsg('❌ ' + err.response?.data?.message); }
+                    }}>Save</button>
+                    <button className="btn btn-ghost" onClick={() => setCatalogueForm(null)}>Cancel</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="admin-table">
+              {catalogueItems.length === 0
+                ? <p className="empty-msg">No catalogue items yet.</p>
+                : catalogueItems.map((item) => {
+                  const shareLink = `${window.location.origin}/catalogue/${item.id}`;
+                  const expanded = !!catProducts[item.id];
+                  const itemProducts = catProducts[item.id] || [];
+                  const isLoadingProducts = !!loadingCatProducts[item.id];
+                  return (
+                    <div key={item.id} className="card catalogue-admin-card">
+                      {/* ── top row ── */}
+                      <div className="catalogue-admin-row">
+                        <div className="row-info">
+                          <strong>{item.label}</strong>
+                          <span className="badge">{item.category}</span>
+                          <span style={{ fontSize: '0.8rem', color: 'var(--gray-dark)' }}>order: {item.order}</span>
+                          <div className="catalogue-share-row">
+                            <input className="catalogue-share-input" readOnly value={shareLink} onClick={(e) => e.target.select()} />
+                            <button className="btn btn-outline btn-sm" onClick={() => { navigator.clipboard.writeText(shareLink); setMsg('✅ Link copied!'); }}>Copy</button>
+                            <a href={shareLink} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm">Open</a>
+                          </div>
+                        </div>
+                        <div className="row-actions">
+                          <button className="btn btn-sm btn-teal" onClick={() => loadCatProducts(item)}>
+                            {isLoadingProducts ? '…' : expanded ? 'Hide Products' : 'Manage Products'}
+                          </button>
+                          <button className="btn btn-outline btn-sm" onClick={() => setCatalogueForm(item)}>Edit</button>
+                          <button className="btn btn-danger btn-sm" onClick={async () => {
+                            if (!window.confirm('Delete this item?')) return;
+                            await api.delete(`/admin/catalogue/${item.id}`);
+                            loadAll();
+                          }}>Delete</button>
+                        </div>
+                      </div>
+
+                      {/* ── expanded products ── */}
+                      {expanded && (
+                        <div className="cat-products-panel">
+                          <div className="cat-products-panel-header">
+                            <span>{itemProducts.length} product{itemProducts.length !== 1 ? 's' : ''} in this catalogue</span>
+                            <button className="btn btn-primary btn-sm" onClick={() =>
+                              setCatProductForm({ catalogueId: item.id, form: { title: '', description: '', images: [''], price: 0, category: item.category, inStock: true } })
+                            }>+ Add Product</button>
+                          </div>
+
+                          {catProductForm?.catalogueId === item.id && (
+                            <div className="cat-product-form-wrap">
+                              <h4>{catProductForm.form.id ? 'Edit Product' : 'New Product'}</h4>
+                              <ProductForm
+                                initial={catProductForm.form.id ? catProductForm.form : { ...catProductForm.form }}
+                                onSave={async (form) => {
+                                  try {
+                                    if (form.id) await api.put(`/admin/products/${form.id}`, form);
+                                    else await api.post('/admin/products', { ...form, category: item.category });
+                                    setCatProductForm(null);
+                                    const res = await api.get(`/catalogue/${item.id}`);
+                                    setCatProducts((p) => ({ ...p, [item.id]: res.data.products }));
+                                    setMsg('✅ Product saved!');
+                                  } catch (err) { setMsg('❌ ' + err.response?.data?.message); }
+                                }}
+                                onCancel={() => setCatProductForm(null)}
+                              />
+                            </div>
+                          )}
+
+                          {itemProducts.length === 0
+                            ? <p className="empty-msg" style={{ padding: '16px 0' }}>No products yet — add one above.</p>
+                            : (
+                              <div className="cat-product-list">
+                                {itemProducts.map((p) => {
+                                  const img = Array.isArray(p.images) ? p.images[0] : p.images;
+                                  return (
+                                    <div key={p.id} className="cat-product-row">
+                                      <div className="cat-product-row-thumb">
+                                        {img ? <img src={img} alt={p.title} /> : <span>🛍️</span>}
+                                      </div>
+                                      <div className="cat-product-row-info">
+                                        <strong>{p.title}</strong>
+                                        <span>₹{p.price?.toLocaleString()}</span>
+                                        <span className={p.inStock ? 'text-green' : 'text-red'}>{p.inStock ? 'In Stock' : 'Out of Stock'}</span>
+                                      </div>
+                                      <div className="row-actions">
+                                        <button className="btn btn-outline btn-sm" onClick={() =>
+                                          setCatProductForm({ catalogueId: item.id, form: p })
+                                        }>Edit</button>
+                                        <button className="btn btn-danger btn-sm" onClick={() => deleteCatProduct(p.id, item.id)}>Delete</button>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )
+                          }
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              }
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ require('dotenv').config();
 const { sequelize, User, Course, Lesson, Product } = require('./models/index');
 
 async function seed() {
-  await sequelize.sync({ alter: true });
+  await sequelize.sync();
   console.log('Tables synced');
 
   // Admin

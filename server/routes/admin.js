@@ -1,6 +1,6 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
-const { User, Course, Lesson, Product, UserCourse, UserProduct } = require('../models/index');
+const { User, Course, Lesson, Product, Catalogue, UserCourse, UserProduct } = require('../models/index');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 const router = express.Router();
 
@@ -184,6 +184,41 @@ router.delete('/products/:id', async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
+});
+
+// ─── CATALOGUE MANAGEMENT ─────────────────────────────────────────
+
+// GET /api/admin/catalogue
+router.get('/catalogue', async (req, res) => {
+  try {
+    const items = await Catalogue.findAll({ order: [['order', 'ASC'], ['id', 'ASC']] });
+    res.json(items);
+  } catch (err) { res.status(500).json({ message: err.message }); }
+});
+
+// POST /api/admin/catalogue
+router.post('/catalogue', async (req, res) => {
+  try {
+    const item = await Catalogue.create(req.body);
+    res.status(201).json(item);
+  } catch (err) { res.status(500).json({ message: err.message }); }
+});
+
+// PUT /api/admin/catalogue/:id
+router.put('/catalogue/:id', async (req, res) => {
+  try {
+    await Catalogue.update(req.body, { where: { id: req.params.id } });
+    const item = await Catalogue.findByPk(req.params.id);
+    res.json(item);
+  } catch (err) { res.status(500).json({ message: err.message }); }
+});
+
+// DELETE /api/admin/catalogue/:id
+router.delete('/catalogue/:id', async (req, res) => {
+  try {
+    await Catalogue.destroy({ where: { id: req.params.id } });
+    res.json({ message: 'Deleted' });
+  } catch (err) { res.status(500).json({ message: err.message }); }
 });
 
 module.exports = router;

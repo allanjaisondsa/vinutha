@@ -1,44 +1,48 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../api/api';
 import WhatsAppButton from '../components/WhatsAppButton';
 import './styles/Home.css';
 
 const WA = '918197366069';
-const CATALOGUE_ITEMS = [
-  { label: 'Varmala Preservation',         category: 'Varmala Preservation' },
-  { label: 'Photo or Flower Preservation',  category: 'Photo or Flower Preservation' },
-  { label: 'Baby Keepsake Preservation',    category: 'Baby Keepsake Preservation' },
-  { label: 'Home Decore Sindhoor Thalis',   category: 'Home Decore Sindhoor Thalis' },
-  { label: 'Wedding Gifts',                category: 'Wedding Gifts' },
-  { label: 'Engagement Ring Platters',     category: 'Engagement Ring Platters' },
-];
 
 function buildWAMessage(courses) {
   const base = window.location.origin;
   const lines = courses.map(
     (c, i) => `${i + 1}. "${c.title}" — ₹${c.price?.toLocaleString()}\n   ${base}/courses/${c.id}`
   );
-  
   const courseIds = courses.map(c => c.id).join(',');
   const adminLink = `${base}/admin?assignCourses=${courseIds}`;
-  
   return encodeURIComponent(
     `Hi! I'm interested in the following courses:\n\n${lines.join('\n\n')}\n\nPlease share payment & enrollment details. 🎨\n\n---\nAdmin Quick Assign:\n${adminLink}`
   );
 }
 
 export default function Home() {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('catalogue');
   const [courses, setCourses] = useState([]);
-  const [courseCategory, setCourseCategory] = useState('All');
-  const [cart, setCart] = useState([]); // array of course objects
+  const [products, setProducts] = useState([]);
+  const [catalogueItems, setCatalogueItems] = useState([]);
+  const [cart, setCart] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loadingCourses, setLoadingCourses] = useState(true);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [loadingCatalogue, setLoadingCatalogue] = useState(true);
 
   useEffect(() => {
     api.get('/courses')
       .then((res) => setCourses(res.data))
       .catch(() => {})
-      .finally(() => setLoading(false));
+      .finally(() => setLoadingCourses(false));
+    api.get('/products')
+      .then((res) => setProducts(res.data))
+      .catch(() => {})
+      .finally(() => setLoadingProducts(false));
+    api.get('/catalogue')
+      .then((res) => setCatalogueItems(res.data))
+      .catch(() => {})
+      .finally(() => setLoadingCatalogue(false));
   }, []);
 
   const toggle = (course) => {
@@ -49,133 +53,149 @@ export default function Home() {
     );
   };
 
-  const inCart = (id) => cart.some((c) => c.id === id);
-
   const sendToWA = () => {
     window.open(`https://wa.me/${WA}?text=${buildWAMessage(cart)}`, '_blank');
   };
 
-  const courseCategories = ['All', ...new Set(courses.map((c) => c.category || 'General'))];
-  const filteredCourses = courseCategory === 'All' 
-    ? courses 
-    : courses.filter((c) => (c.category || 'General') === courseCategory);
+  const TABS = [
+    { id: 'catalogue', label: 'Catalogue' },
+    { id: 'courses',   label: 'Courses' },
+    { id: 'products',  label: 'Products', disabled: true },
+  ];
 
   return (
     <div className="home">
 
-      {/* ── Hero ─────────────────────────────────── */}
-      <section className="hero-new">
-        <div className="hero-new-overlay" />
-        <div className="hero-new-content container">
-          <p className="hero-new-tagline">WELCOME TO</p>
-          <h1 className="hero-new-title">Explore the World of<br />Resin Art</h1>
-          <p className="hero-new-sub">
-            Select the courses you're interested in and enquire via WhatsApp — all at once!
-          </p>
-        </div>
-      </section>
-
-      {/* ── Courses ─────────────────────────────── */}
-      <section className="courses-section">
+      {/* ── Tab Bar ─────────────────────────────────── */}
+      <div className="main-tab-bar">
         <div className="container">
-          <h2 className="courses-section-title">Our Courses</h2>
-          <p className="courses-section-sub" style={{ marginBottom: 24 }}>
-            Tap <strong>+ Add to Enquiry</strong> on any course, then send all enquiries to us in one WhatsApp message.
-          </p>
-
-          {!loading && courses.length > 0 && (
-            <div className="category-tabs" style={{ justifyContent: 'center' }}>
-              {courseCategories.map((c) => (
-                <button
-                  key={c}
-                  className={`btn btn-sm ${courseCategory === c ? 'btn-primary' : 'btn-ghost'}`}
-                  onClick={() => setCourseCategory(c)}
-                >
-                  {c}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {loading && <div className="loading-page"><div className="spinner" /></div>}
-
-          {!loading && filteredCourses.length === 0 && (
-            <p className="empty-msg">No courses found for this category.</p>
-          )}
-
-          {!loading && filteredCourses.length > 0 && (
-            <div className="courses-grid">
-              {filteredCourses.map((course) => {
-                const selected = inCart(course.id);
-                return (
-                  <div key={course.id} className={`course-card ${selected ? 'course-card--selected' : ''}`}>
-                    <a href={`/courses/${course.id}`} className="course-card-img-link">
-                      <div className="course-card-img">
-                        {course.thumbnail
-                          ? <img src={course.thumbnail} alt={course.title} />
-                          : <div className="course-card-placeholder">📚</div>
-                        }
-                        {course.category && (
-                          <span className="badge badge-primary course-category">{course.category}</span>
-                        )}
-                        {selected && <div className="course-card-selected-overlay">✔ Added</div>}
-                      </div>
-                    </a>
-                    <div className="course-card-body">
-                      <h3 className="course-card-title">{course.title}</h3>
-                      {course.description && (
-                        <p className="course-card-desc">
-                          {course.description.length > 100
-                            ? course.description.slice(0, 100) + '...'
-                            : course.description}
-                        </p>
-                      )}
-                      <div className="course-card-footer">
-                        <span className="course-price">₹{course.price?.toLocaleString()}</span>
-                        <div className="course-card-actions">
-                          <a
-                            href={`/courses/${course.id}`}
-                            className="btn btn-outline btn-sm"
-                          >
-                            Details
-                          </a>
-                          <button
-                            className={`btn btn-sm ${selected ? 'btn-selected' : 'btn-primary'}`}
-                            onClick={() => toggle(course)}
-                          >
-                            {selected ? '✔ Added' : '+ Add to Enquiry'}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* ── Catalogue ───────────────────────────── */}
-      <section className="catalogue-section">
-        <div className="container">
-          <h2 className="catalogue-title">CATALOGUE</h2>
-          <p className="catalogue-sub">Browse our premium handcrafted collections</p>
-          <div className="catalogue-grid">
-            {CATALOGUE_ITEMS.map((item) => (
-              <a
-                key={item.category}
-                href={`/products?category=${encodeURIComponent(item.category)}`}
-                className="catalogue-btn"
+          <div className="main-tabs">
+            {TABS.map((t) => (
+              <button
+                key={t.id}
+                className={`main-tab-btn ${activeTab === t.id ? 'main-tab-btn--active' : ''} ${t.disabled ? 'main-tab-btn--disabled' : ''}`}
+                onClick={() => !t.disabled && setActiveTab(t.id)}
+                disabled={t.disabled}
               >
-                {item.label}
-              </a>
+                {t.label}
+              </button>
             ))}
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* ── Floating Cart Bar ────────────────────── */}
+      {/* ── Products Tab ────────────────────────────── */}
+      {activeTab === 'products' && (
+        <section className="tab-section">
+          <div className="container">
+            <h2 className="tab-section-title">Our Products</h2>
+            <p className="tab-section-sub">Handcrafted resin art — order via WhatsApp</p>
+
+            {loadingProducts && <div className="loading-page"><div className="spinner" /></div>}
+
+            {!loadingProducts && products.length === 0 && (
+              <p className="empty-msg">No products available yet.</p>
+            )}
+
+            {!loadingProducts && products.length > 0 && (
+              <div className="product-boxes-grid">
+                {products.map((p) => {
+                  const img = Array.isArray(p.images) ? p.images[0] : p.images;
+                  const waLink = `https://wa.me/${WA}?text=${encodeURIComponent(
+                    `Hi! I'd like to order "${p.title}" (₹${p.price}). Please share availability and payment details. 🛍️`
+                  )}`;
+                  return (
+                    <div key={p.id} className="product-box">
+                      <div className="product-box-img">
+                        {img
+                          ? <img src={img} alt={p.title} />
+                          : <div className="product-box-placeholder">🛍️</div>
+                        }
+                        {!p.inStock && <span className="product-box-oos">Out of Stock</span>}
+                      </div>
+                      <div className="product-box-body">
+                        {p.category && <span className="product-box-category">{p.category}</span>}
+                        <h4 className="product-box-title">{p.title}</h4>
+                        <span className="product-box-price">₹{p.price?.toLocaleString()}</span>
+                        {p.inStock !== false && (
+                          <a href={waLink} target="_blank" rel="noopener noreferrer" className="product-box-btn">
+                            Order
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* ── Catalogue Tab ───────────────────────────── */}
+      {activeTab === 'catalogue' && (
+        <section className="tab-section">
+          <div className="container">
+            <h2 className="tab-section-title">Catalogue</h2>
+            <p className="tab-section-sub">Browse our premium handcrafted collections</p>
+            {loadingCatalogue && <div className="loading-page"><div className="spinner" /></div>}
+            {!loadingCatalogue && catalogueItems.length === 0 && (
+              <p className="empty-msg">No catalogue items yet.</p>
+            )}
+            {!loadingCatalogue && catalogueItems.length > 0 && (
+              <div className="catalogue-vertical">
+                {catalogueItems.map((item) => (
+                  <a
+                    key={item.id}
+                    href={`/catalogue/${item.id}`}
+                    className="catalogue-vertical-btn"
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* ── Courses Tab ─────────────────────────────── */}
+      {activeTab === 'courses' && (
+        <section className="tab-section">
+          <div className="container">
+            <h2 className="tab-section-title">Our Courses</h2>
+            <p className="tab-section-sub">Click a course to learn more and enrol</p>
+
+            {loadingCourses && <div className="loading-page"><div className="spinner" /></div>}
+
+            {!loadingCourses && courses.length === 0 && (
+              <p className="empty-msg">No courses available yet.</p>
+            )}
+
+            {!loadingCourses && courses.length > 0 && (
+              <div className="course-btns-grid">
+                {courses.map((course) => (
+                  <button
+                    key={course.id}
+                    className="course-nav-btn"
+                    onClick={() => navigate(`/courses/${course.id}`)}
+                  >
+                    <span className="course-nav-btn-title">{course.title}</span>
+                    {course.category && (
+                      <span className="course-nav-btn-cat">{course.category}</span>
+                    )}
+                    {course.price && (
+                      <span className="course-nav-btn-price">₹{course.price?.toLocaleString()}</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* ── Floating Cart Bar (courses enquiry) ─────── */}
       {cart.length > 0 && (
         <div className="cart-bar">
           <button className="cart-bar-toggle" onClick={() => setCartOpen(!cartOpen)}>
