@@ -555,7 +555,7 @@ export default function AdminPanel() {
           <div>
             <div className="tab-header">
               <h3>Catalogue Items ({catalogueItems.length})</h3>
-              <button className="btn btn-primary" onClick={() => setCatalogueForm({ label: '', category: '', order: 0 })}>+ New Item</button>
+              <button className="btn btn-primary" onClick={() => setCatalogueForm({ label: '', category: '', image: '', order: 0 })}>+ New Item</button>
             </div>
 
             {catalogueForm !== null && (
@@ -578,6 +578,10 @@ export default function AdminPanel() {
                         onChange={(e) => setCatalogueForm((f) => ({ ...f, category: e.target.value }))}
                         placeholder="e.g. Varmala Preservation"
                       />
+                    </div>
+                    <div className="form-group">
+                      <label>Catalogue Image</label>
+                      <ImageUploadInput value={catalogueForm.image} onChange={(url) => setCatalogueForm((f) => ({ ...f, image: url }))} />
                     </div>
                   </div>
                   <div className="form-group" style={{ maxWidth: 160 }}>
@@ -616,6 +620,13 @@ export default function AdminPanel() {
                     <div key={item.id} className="card catalogue-admin-card">
                       {/* ── top row ── */}
                       <div className="catalogue-admin-row">
+                        <div className="row-thumb" style={{ marginRight: 16 }}>
+                          {item.image ? (
+                            <img src={item.image.startsWith('/uploads/') ? `${SERVER_URL}${item.image}` : item.image} alt={item.label} style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 8 }} />
+                          ) : (
+                            <div style={{ width: 60, height: 60, background: '#eee', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>🖼️</div>
+                          )}
+                        </div>
                         <div className="row-info">
                           <strong>{item.label}</strong>
                           <span className="badge">{item.category}</span>

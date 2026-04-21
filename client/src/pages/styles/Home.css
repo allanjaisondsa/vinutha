@@ -159,39 +159,82 @@
   transform: translateY(-1px);
 }
 
-/* ── Catalogue Vertical ────────────────────────────── */
-.catalogue-vertical {
+/* ── Catalogue Box ────────────────────────────── */
+.catalogue-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+.catalogue-box {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(14,116,144,0.12);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  max-width: 540px;
-  margin: 0 auto;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-.catalogue-vertical-btn {
+.catalogue-box:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(14,116,144,0.22);
+}
+.catalogue-box-img {
+  width: 100%;
+  height: 240px;
+  background: #e0f2fe;
+  overflow: hidden;
+  position: relative;
+}
+.catalogue-box-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.catalogue-box:hover .catalogue-box-img img {
+  transform: scale(1.08);
+}
+.catalogue-box-placeholder {
   display: flex;
   align-items: center;
-  background: linear-gradient(135deg, #0e7490 0%, #0891b2 100%);
+  justify-content: center;
+  height: 100%;
+  font-size: 4rem;
+  color: #94a3b8;
+}
+.catalogue-box-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  text-align: center;
+}
+.catalogue-box-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0;
+  line-height: 1.3;
+}
+.catalogue-box-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #0e7490, #06b6d4);
   color: #fff;
-  text-decoration: none;
-  border-radius: 10px;
-  padding: 18px 24px;
-  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 28px;
+  font-size: 0.95rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
-  transition: all 0.2s;
-  box-shadow: 0 3px 12px rgba(8,145,178,0.22);
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  width: 100%;
 }
-.catalogue-vertical-btn::after {
-  content: '›';
-  margin-left: auto;
-  font-size: 1.4rem;
-  opacity: 0.7;
-}
-.catalogue-vertical-btn:hover {
-  background: linear-gradient(135deg, #155e75 0%, #0e7490 100%);
-  transform: translateX(6px);
-  box-shadow: 0 6px 20px rgba(8,145,178,0.32);
+.catalogue-box-btn:hover {
+  background: linear-gradient(135deg, #155e75, #0e7490);
+  transform: translateY(-2px);
 }
 
 /* ── Course Buttons ────────────────────────────────── */
@@ -200,7 +243,7 @@
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 14px;
 }
-.course-nav-btn {
+.course-nav-card {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -209,33 +252,54 @@
   border-radius: 12px;
   padding: 18px 20px;
   text-align: left;
-  cursor: pointer;
   transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
   box-shadow: 0 2px 8px rgba(14,116,144,0.07);
 }
-.course-nav-btn:hover {
+.course-nav-card:hover {
   border-color: #0e7490;
   box-shadow: 0 6px 20px rgba(14,116,144,0.18);
   transform: translateY(-3px);
 }
-.course-nav-btn-title {
+.course-nav-card-title {
   font-size: 0.95rem;
   font-weight: 700;
   color: #1e293b;
   line-height: 1.35;
+  flex: 1;
 }
-.course-nav-btn-cat {
+.course-nav-card-cat {
   font-size: 0.75rem;
   font-weight: 600;
   color: #0891b2;
   text-transform: uppercase;
   letter-spacing: 0.4px;
 }
-.course-nav-btn-price {
+.course-nav-card-price {
   font-size: 1rem;
   font-weight: 800;
   color: #0e7490;
   margin-top: 4px;
+}
+.course-content-btn {
+  margin-top: 12px;
+  display: inline-block;
+  background: linear-gradient(135deg, #0e7490, #06b6d4);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  width: 100%;
+}
+.course-content-btn:hover {
+  background: linear-gradient(135deg, #155e75, #0e7490);
+  transform: translateY(-1px);
 }
 
 /* ── Misc ──────────────────────────────────────────── */
@@ -373,6 +437,6 @@
   .main-tab-btn { font-size: 0.82rem; padding: 14px 6px; }
   .product-boxes-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .course-btns-grid { grid-template-columns: 1fr; }
-  .catalogue-vertical-btn { font-size: 0.92rem; padding: 16px 18px; }
+  .catalogue-grid { grid-template-columns: 1fr; gap: 16px; }
   .whatsapp-fab { bottom: 80px; }
 }

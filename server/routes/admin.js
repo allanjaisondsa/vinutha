@@ -1,5 +1,5 @@
 const express = require('express');
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto');
 const { User, Course, Lesson, Product, Catalogue, UserCourse, UserProduct } = require('../models/index');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 const router = express.Router();
@@ -16,7 +16,7 @@ router.post('/create-user', async (req, res) => {
     const existing = await User.findOne({ where: { email } });
     if (existing) return res.status(400).json({ message: 'User with this email already exists' });
 
-    const inviteToken = uuidv4();
+    const inviteToken = randomUUID();
     const user = await User.create({ name, email, inviteToken });
     const inviteLink = `${process.env.CLIENT_URL}/register?token=${inviteToken}`;
     res.json({ message: 'Invite created', user: { id: user.id, name: user.name, email: user.email }, inviteLink });

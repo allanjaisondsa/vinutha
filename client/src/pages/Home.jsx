@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/api';
+import api, { SERVER_URL } from '../api/api';
 import WhatsAppButton from '../components/WhatsAppButton';
 import './styles/Home.css';
 
@@ -143,15 +143,29 @@ export default function Home() {
               <p className="empty-msg">No catalogue items yet.</p>
             )}
             {!loadingCatalogue && catalogueItems.length > 0 && (
-              <div className="catalogue-vertical">
+              <div className="catalogue-grid">
                 {catalogueItems.map((item) => (
-                  <a
-                    key={item.id}
-                    href={`/catalogue/${item.id}`}
-                    className="catalogue-vertical-btn"
-                  >
-                    {item.label}
-                  </a>
+                  <div key={item.id} className="catalogue-box">
+                    <div className="catalogue-box-img">
+                      {item.image ? (
+                        <img 
+                          src={item.image.startsWith('/uploads/') ? SERVER_URL + item.image : item.image} 
+                          alt={item.label} 
+                        />
+                      ) : (
+                        <div className="catalogue-box-placeholder">🖼️</div>
+                      )}
+                    </div>
+                    <div className="catalogue-box-body">
+                      <h4 className="catalogue-box-title">{item.label}</h4>
+                      <button 
+                        className="catalogue-box-btn"
+                        onClick={() => navigate(`/catalogue/${item.id}`)}
+                      >
+                        Browse Designs
+                      </button>
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
@@ -175,19 +189,24 @@ export default function Home() {
             {!loadingCourses && courses.length > 0 && (
               <div className="course-btns-grid">
                 {courses.map((course) => (
-                  <button
+                  <div
                     key={course.id}
-                    className="course-nav-btn"
-                    onClick={() => navigate(`/courses/${course.id}`)}
+                    className="course-nav-card"
                   >
-                    <span className="course-nav-btn-title">{course.title}</span>
+                    <span className="course-nav-card-title">{course.title}</span>
                     {course.category && (
-                      <span className="course-nav-btn-cat">{course.category}</span>
+                      <span className="course-nav-card-cat">{course.category}</span>
                     )}
                     {course.price && (
-                      <span className="course-nav-btn-price">₹{course.price?.toLocaleString()}</span>
+                      <span className="course-nav-card-price">₹{course.price?.toLocaleString()}</span>
                     )}
-                  </button>
+                    <button 
+                      className="course-content-btn"
+                      onClick={() => navigate(`/courses/${course.id}`)}
+                    >
+                      Course Content
+                    </button>
+                  </div>
                 ))}
               </div>
             )}
